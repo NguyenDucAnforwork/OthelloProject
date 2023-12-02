@@ -5,4 +5,7 @@
 - Giải thích kết quả + show code/hình ảnh minh họa  
 
 **1. Minimax Algorithm**
-- Heuristic 1: Đo độ chênh lệch giữa quân trắng và đen
+- Heuristic 1: Coin Party
+
+- Heuristic 2: Local Maximization (basically add weight for each cell)
+![Example Image](result/heuristic2_fistTry.jpg)

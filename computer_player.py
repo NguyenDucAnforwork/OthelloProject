@@ -13,7 +13,7 @@ class ComputerPlayer:
         availMoves = self.grid.findAvailMoves(newGrid, player)
 
         if depth == 0 or len(availMoves) == 0:
-            bestMove, Score = None, evaluateBoard(grid, player)   # double check evaluate function
+            bestMove, Score = None, heuristic1(grid)   # double check evaluate function
             return bestMove, Score
 
         if player < 0:   # minimizing player
@@ -27,6 +27,7 @@ class ComputerPlayer:
                 for tile in swappableTiles:
                     newGrid[tile[0]][tile[1]] = player
 
+                # we need to update the grid before calling recursive function
                 bMove, value = self.computerHard(newGrid, depth-1, alpha, beta, player *-1)
 
                 if value < bestScore:

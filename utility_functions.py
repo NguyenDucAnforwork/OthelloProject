@@ -32,6 +32,21 @@ def loadSpriteSheet(sheet, row, col, newSize, size):
     image.set_colorkey('Black')
     return image
 
-def evaluateBoard(grid, player):
+def heuristic1(grid):
     res = sum([num for row in grid for num in row])
+    return res
+
+def heuristic2(grid):
+    print(grid)
+    weight = [
+        [120,-20,20,5,5,20,-20,120],
+        [-20,-40,-5,-5,-5,-5,-40,-20],
+        [20,-5,15,3,3,15,-5,20],
+        [5,-5,3,3,3,3,-5,5],
+        [5,-5,3,3,3,3,-5,5],
+        [20,-5,15,3,3,15,-5,20],
+        [-20,-40,-5,-5,-5,-5,-40,-20],
+        [120,-20,20,5,5,20,-20,120],
+    ]
+    res = print(sum([int(grid[i][j])*int(weight[i][j]) for i in range(0,8) for j in range(0,8)]))
     return res

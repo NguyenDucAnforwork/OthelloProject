@@ -79,7 +79,7 @@ class Othello:
                 if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
                     self.gameOver = True
                     return
-                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 5, -64, 64, -1)
+                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 6, -64, 64, -1)
                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                 swappableTiles = self.grid.swappableTiles(cell[0], cell[1], self.grid.gridLogic, self.currentPlayer)
                 for tile in swappableTiles:

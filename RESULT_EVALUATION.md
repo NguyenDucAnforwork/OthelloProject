@@ -8,4 +8,4 @@
 - Heuristic 1: Coin Party
 
 - Heuristic 2: Local Maximization (basically add weight for each cell)
-![Example Image](result/heuristic2_fistTry.jpg)
+![Example Image](result/heuristic2_firstTry.jpg)

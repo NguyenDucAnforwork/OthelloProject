@@ -75,6 +75,7 @@ def swappableTilesGlobal(x, y, grid, player):
 def findAvailMovesGlobal(grid, currentPlayer):
         validCells = findValidCellsGlobal(grid, currentPlayer)
         playableCells = []
+        unstableCell = []
 
         for cell in validCells:
             x, y = cell
@@ -83,8 +84,12 @@ def findAvailMovesGlobal(grid, currentPlayer):
             swapTiles = swappableTilesGlobal(x, y, grid, currentPlayer)
             if len(swapTiles) > 0:
                 playableCells.append(cell)
+                for element in swapTiles:
+                    if element not in unstableCell:
+                        unstableCell.extend(swapTiles)
 
-        return playableCells
+        return playableCells, unstableCell
+
 
 def loadImages(path, size):
     """Load an image into the game, and scale the image"""
@@ -109,20 +114,24 @@ def coin_party(grid):
 
 def mobility(grid):
     # actual/potential mobility: For simplicity I would use the most simple form
-    whiteAvailableMoves = len(findAvailMovesGlobal(grid, 1))
-    blackAvailableMoves = len(findAvailMovesGlobal(grid, -1))
+    whiteMoves, swappableBlackTiles = findAvailMovesGlobal(grid, 1)
+    whiteAvailableMoves = len(whiteMoves)
+    blackMoves, swappableWhiteTiles = findAvailMovesGlobal(grid, -1)
+    blackAvailableMoves = len(blackMoves)
     if whiteAvailableMoves + blackAvailableMoves > 0:
         return 100 * (whiteAvailableMoves - blackAvailableMoves) / (whiteAvailableMoves + blackAvailableMoves)
     else:
         return 0
 
-# stable, semi-stable, unstable
+# stable, semi-stable, unstable. Do we really need the statistic from both sides? 
 def stability(grid):
-    # stable
+    # unstable
+    whiteMoves, unstableBlackTiles = findAvailMovesGlobal(grid, 1)
+    blackMoves, unstableWhiteTiles = findAvailMovesGlobal(grid, -1)
 
     # semi-stable
-
-    # unstable
+    
+    # stable
     pass
 
 # we definitely need to experiment some pairs of weights

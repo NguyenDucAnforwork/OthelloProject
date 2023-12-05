@@ -18,6 +18,74 @@ def directions(x, y, minX=0, minY=0, maxX=7, maxY=7):
 
     return validdirections
 
+def findValidCellsGlobal(grid, curPlayer):
+        validCellToClick = []
+        for gridX, row in enumerate(grid):
+            for gridY, col in enumerate(row):
+                if grid[gridX][gridY] != 0:
+                    continue
+                DIRECTIONS = directions(gridX, gridY)
+
+                for direction in DIRECTIONS:
+                    dirX, dirY = direction
+                    checkedCell = grid[dirX][dirY]
+
+                    if checkedCell == 0 or checkedCell == curPlayer:
+                        continue
+
+                    if (gridX, gridY) in validCellToClick:          # is this necessary?
+                        continue
+
+                    validCellToClick.append((gridX, gridY))
+        return validCellToClick
+
+def swappableTilesGlobal(x, y, grid, player):
+        surroundCells = directions(x, y)
+        if len(surroundCells) == 0:
+            return []
+
+        swappableTiles = []
+        for checkCell in surroundCells:
+            checkX, checkY = checkCell
+            difX, difY = checkX - x, checkY - y
+            currentLine = []
+
+            RUN = True
+            while RUN:
+                if grid[checkX][checkY] == player * -1:
+                    currentLine.append((checkX, checkY))
+                elif grid[checkX][checkY] == player:
+                    RUN = False     # we search along the same direction and stops when got the same color as (x,y)
+                    break
+                elif grid[checkX][checkY] == 0:
+                    currentLine.clear()
+                    RUN = False
+                checkX += difX
+                checkY += difY
+
+                if checkX < 0 or checkX > 7 or checkY < 0 or checkY > 7:
+                    currentLine.clear()
+                    RUN = False
+
+            if len(currentLine) > 0:
+                swappableTiles.extend(currentLine)
+
+        return swappableTiles
+
+def findAvailMovesGlobal(grid, currentPlayer):
+        validCells = findValidCellsGlobal(grid, currentPlayer)
+        playableCells = []
+
+        for cell in validCells:
+            x, y = cell
+            if cell in playableCells:
+                continue
+            swapTiles = swappableTilesGlobal(x, y, grid, currentPlayer)
+            if len(swapTiles) > 0:
+                playableCells.append(cell)
+
+        return playableCells
+
 def loadImages(path, size):
     """Load an image into the game, and scale the image"""
     img = pygame.image.load(f"{path}").convert_alpha()
@@ -32,11 +100,47 @@ def loadSpriteSheet(sheet, row, col, newSize, size):
     image.set_colorkey('Black')
     return image
 
-def heuristic1(grid):
-    res = sum([num for row in grid for num in row])
+def coin_party(grid):
+    black_piece = sum([1 if num == -1 else 0 for row in grid for num in row])
+    white_piece = sum([1 if num == 1 else 0 for row in grid for num in row]) 
+ 
+    res = 100 * (white_piece - black_piece) / (white_piece + black_piece)
     return res
 
-def heuristic2(grid):
+def mobility(grid):
+    # actual/potential mobility: For simplicity I would use the most simple form
+    whiteAvailableMoves = len(findAvailMovesGlobal(grid, 1))
+    blackAvailableMoves = len(findAvailMovesGlobal(grid, -1))
+    if whiteAvailableMoves + blackAvailableMoves > 0:
+        return 100 * (whiteAvailableMoves - blackAvailableMoves) / (whiteAvailableMoves + blackAvailableMoves)
+    else:
+        return 0
+
+# stable, semi-stable, unstable
+def stability(grid):
+    # stable
+
+    # semi-stable
+
+    # unstable
+    pass
+
+# we definitely need to experiment some pairs of weights
+def corner_closeness(grid):
+    coordinates = {
+        [0,1], [1,0],
+        [0,6], [1,7],
+        [6,0], [7,1],
+        [6,7], [7,6]
+    }
+
+    white_pieces = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
+    black_pieces = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
+
+    return -12.5 * white_pieces + 12.5 * black_pieces
+
+# need to build dynamic weight
+def static_weight(grid):
     print(grid)
     weight = [
         [120,-20,20,5,5,20,-20,120],

@@ -139,7 +139,7 @@ class Grid:
 
     # directions
     # Performs a check to find all empty cells that are adjacent to opposing player
-    # first we consider all the empty squares => then check if its color is the opposite one
+    # first we consider all the empty squares => then check if its adjancent square's color is the opposite one
     def findValidCells(self, grid, curPlayer):
         validCellToClick = []
         for gridX, row in enumerate(grid):
@@ -155,13 +155,13 @@ class Grid:
                     if checkedCell == 0 or checkedCell == curPlayer:
                         continue
 
-                    if (gridX, gridY) in validCellToClick:
+                    if (gridX, gridY) in validCellToClick:          # is this necessary?
                         continue
 
                     validCellToClick.append((gridX, gridY))
         return validCellToClick
 
-    # return the cells (but not UPDATE it) that will be swapped for each cell in surrounded cells if player played the move (x,y)
+    # return the cells (but not UPDATE it) that will be swapped for each cell in surrounded cells if the player played the move (x,y)
     def swappableTiles(self, x, y, grid, player):
         surroundCells = directions(x, y)
         if len(surroundCells) == 0:
@@ -178,7 +178,7 @@ class Grid:
                 if grid[checkX][checkY] == player * -1:
                     currentLine.append((checkX, checkY))
                 elif grid[checkX][checkY] == player:
-                    RUN = False
+                    RUN = False     # we search along the same direction and stops when got the same color as (x,y)
                     break
                 elif grid[checkX][checkY] == 0:
                     currentLine.clear()
@@ -195,7 +195,7 @@ class Grid:
 
         return swappableTiles
     
-    # findValidCells. Takes the list of validCells and checks each to see if playable"""
+    # findValidCells. Takes the list of validCells and returns a list of playable cells"""
     def findAvailMoves(self, grid, currentPlayer):
         validCells = self.findValidCells(grid, currentPlayer)
         playableCells = []

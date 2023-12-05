@@ -13,7 +13,7 @@ class ComputerPlayer:
         availMoves = self.grid.findAvailMoves(newGrid, player)
 
         if depth == 0 or len(availMoves) == 0:
-            bestMove, Score = None, heuristic1(grid)   # double check evaluate function
+            bestMove, Score = None, coin_party(grid)   # double check evaluate function
             return bestMove, Score
 
         if player < 0:   # minimizing player

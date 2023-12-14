@@ -18,26 +18,27 @@ def directions(x, y, minX=0, minY=0, maxX=7, maxY=7):
 
     return validdirections
 
+# necessary conditions 
 def findValidCellsGlobal(grid, curPlayer):
-        validCellToClick = []
-        for gridX, row in enumerate(grid):
-            for gridY, col in enumerate(row):
-                if grid[gridX][gridY] != 0:
+    validCellToClick = []
+    for gridX, row in enumerate(grid):
+        for gridY, col in enumerate(row):
+            if grid[gridX][gridY] != 0:
+                continue
+            DIRECTIONS = directions(gridX, gridY)
+
+            for direction in DIRECTIONS:
+                dirX, dirY = direction
+                checkedCell = grid[dirX][dirY]
+
+                if checkedCell == 0 or checkedCell == curPlayer:
                     continue
-                DIRECTIONS = directions(gridX, gridY)
 
-                for direction in DIRECTIONS:
-                    dirX, dirY = direction
-                    checkedCell = grid[dirX][dirY]
+                if (gridX, gridY) in validCellToClick:          # is this necessary?
+                    continue
 
-                    if checkedCell == 0 or checkedCell == curPlayer:
-                        continue
-
-                    if (gridX, gridY) in validCellToClick:          # is this necessary?
-                        continue
-
-                    validCellToClick.append((gridX, gridY))
-        return validCellToClick
+                validCellToClick.append((gridX, gridY))
+    return validCellToClick
 
 def swappableTilesGlobal(x, y, grid, player):
         surroundCells = directions(x, y)
@@ -105,12 +106,11 @@ def loadSpriteSheet(sheet, row, col, newSize, size):
     image.set_colorkey('Black')
     return image
 
-def coin_party(grid):
+def coinParty(grid):
     black_piece = sum([1 if num == -1 else 0 for row in grid for num in row])
     white_piece = sum([1 if num == 1 else 0 for row in grid for num in row]) 
- 
-    res = 100 * (white_piece - black_piece) / (white_piece + black_piece)
-    return res
+    
+    return 100 * (white_piece - black_piece) / (white_piece + black_piece)
 
 def mobility(grid):
     # actual/potential mobility: For simplicity I would use the most simple form
@@ -119,7 +119,9 @@ def mobility(grid):
     blackMoves, swappableWhiteTiles = findAvailMovesGlobal(grid, -1)
     blackAvailableMoves = len(blackMoves)
     if whiteAvailableMoves + blackAvailableMoves > 0:
-        return 100 * (whiteAvailableMoves - blackAvailableMoves) / (whiteAvailableMoves + blackAvailableMoves)
+        return 1000 * (whiteAvailableMoves - blackAvailableMoves) / (whiteAvailableMoves + blackAvailableMoves)
+    # potential mobility
+
     else:
         return 0
 
@@ -147,6 +149,12 @@ def corner_closeness(grid):
     black_pieces = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
 
     return -12.5 * white_pieces + 12.5 * black_pieces
+
+def corner_occupancy(grid):
+    corner = [[0,0], [0,7], [7,0], [7,7]]
+    white_corner = sum([1 if grid[cor[0]][cor[1]] == 1 else 0 for cor in corner])
+    black_corner = sum([1 if grid[cor[0]][cor[1]] == -1 else 0 for cor in corner])
+    return 25 * white_corner - 25 * black_corner
 
 # need to build dynamic weight
 def static_weight(grid):

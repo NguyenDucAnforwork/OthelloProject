@@ -3,7 +3,7 @@ import random
 import copy
 from grid import *
 from computer_player import *
-
+import time
 class Othello:
     # first time in my life I see they pass self as an argument :)) 
     def __init__(self):
@@ -21,7 +21,8 @@ class Othello:
         self.rows = 8
         self.columns = 8
 
-        self.gameOver = True
+        self.gameOverForPlayer = True
+        self.gameOverForComputer = False
 
         self.grid = Grid(self.rows, self.columns, (80, 80), self)
         self.computerPlayer = ComputerPlayer(self.grid)
@@ -47,11 +48,19 @@ class Othello:
                     self.grid.printGameLogicBoard()
 
                 if event.button == 1:
-                    if self.currentPlayer == 1 and not self.gameOver:
+                    if self.gameOverForPlayer and self.gameOverForComputer:
+                        x, y = pygame.mouse.get_pos()
+                        if x >= 320 and x <= 480 and y >= 400 and y <= 480:
+                            self.grid.newGame()
+                            self.gameOverForPlayer = False
+                            self.gameOverForComputer = False
+                    
+                    if self.currentPlayer == 1:
                         x, y = pygame.mouse.get_pos()
                         x, y = (x - 80) // 80, (y - 80) // 80
                         validCells = self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer)
-                        if validCells:                            
+                        if validCells:
+                            self.gameOverForPlayer = False                            
                             if (y, x) in validCells:
                                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, y, x)
                                 swappableTiles = self.grid.swappableTiles(y, x, self.grid.gridLogic, self.currentPlayer)
@@ -59,40 +68,51 @@ class Othello:
                                     self.grid.animateTransitions(tile, self.currentPlayer)
                                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
                                 self.currentPlayer *= -1
+                                # StableDisc = stableDisc(self.grid.gridLogic, 1)
+                                # for disc in StableDisc:
+                                #     print(disc, end=" ")
+                                # print()
                                 self.time = pygame.time.get_ticks()
-                            else:
-                                break
-                    if self.gameOver:
-                        x, y = pygame.mouse.get_pos()
-                        if x >= 320 and x <= 480 and y >= 400 and y <= 480:
-                            self.grid.newGame()
-                            self.gameOver = False
-
+                        else:
+                            gameOverForPlayer = True   # if we has no valid move
+                            self.currentPlayer *= -1
+                            break
+                    
     # gameOver | findAvailMoves => computerHard => insertToken => swappableTiles => animateTransitions => updateScore
     # we use the algorith to find the best move for black pieces only
     # update score | update cell that is swappable | find the next move for the computer side
     def update(self):
         if self.currentPlayer == -1:
             new_time = pygame.time.get_ticks()
-            if new_time - self.time >= 100:
+            if new_time - self.time >= 100:   # because of this it would update the score for both side at their timestamp   
                 if not self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
-                    self.gameOver = True
+                    self.gameOverForComputer = True
+                    self.currentPlayer *= -1
                     return
-                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 6, -64, 64, -1)
+                self.gameOverForComputer = False
+                numMove = sum([abs(num) for row in self.grid.gridLogic for num in row])
+                start_time = time.time()
+                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 6, -64, 64, -1, numMove)
+                end_time = time.time()
+                print("Thời gian thực hiện nước {numMove} là ", end_time-start_time)
                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                 swappableTiles = self.grid.swappableTiles(cell[0], cell[1], self.grid.gridLogic, self.currentPlayer)
                 for tile in swappableTiles:
                     self.grid.animateTransitions(tile, self.currentPlayer)
                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
-                if not self.gameOver:
-                    self.currentPlayer *= -1
+                
+                self.currentPlayer *= -1   # switch to the opposite side anyways
+                StableDisc = stableDisc(self.grid.gridLogic, -1)
+                
 
         self.grid.player1Score = self.grid.updateScore(self.player1)
         self.grid.player2Score = self.grid.updateScore(self.player2)
+        
+        # is this condition necessary? 
         occupied_cell = sum([1 if self.grid.gridLogic[x][y] != 0 else 0 for x in range(0,8) for y in range(0,8)])
         if occupied_cell == 64:
-            self.gameOver = True      # if there's no available move there we simply pass our turn
-                                    # there doesn't exist the case when both player couldn't move while the board's still not fulfiled
+            self.gameOverForComputer = True      # if there's no available move there we simply pass our turn
+            self.gameOverForPlayer = True                       # there doesn't exist the case when both player couldn't move while the board's still not fulfiled
             return
 
     # draw grid with the method drawGrid of the class Grid and update

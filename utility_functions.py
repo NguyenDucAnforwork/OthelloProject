@@ -18,7 +18,52 @@ def directions(x, y, minX=0, minY=0, maxX=7, maxY=7):
 
     return validdirections
 
-# necessary conditions 
+# necessary conditions
+def stableDisc(grid, player):
+    pairDirections = [[[0,1], [0,-1]], [[-1,0], [1,0]], [[1,1], [-1,-1]], [[-1,1], [1,-1]]]
+    discCoor = []
+    for gridX, row in enumerate(grid):
+        for gridY, col in enumerate(row):
+            if grid[gridX][gridY] == player:
+                discCoor.append([gridX, gridY])
+    result = []
+    for coor in discCoor:
+        X, Y = coor[0], coor[1]
+        check = True
+
+        for pair in pairDirections:
+            checkLeft = True
+            checkRight = True
+            left = pair[0]
+            right = pair[1]
+            leftX, leftY = left[0], left[1]
+            rightX, rightY = right[0], right[1]
+            while True:
+                X, Y = X + leftX, Y + leftY
+                if X * (X - 7) > 0 or Y * (Y - 7) > 0:
+                    break
+                if grid[X][Y] != player:
+                    checkLeft = False
+                    break
+            X, Y = coor[0], coor[1]
+            
+            while True:
+                X, Y = X + rightX, Y + rightY
+                if X * (X - 7) > 0 or Y * (Y - 7) > 0:
+                    break
+                if grid[X][Y] != player:
+                    checkRight = False
+                    break
+
+            if not checkLeft and not checkRight:
+                check = False
+        if check:
+            result.append(coor)
+    return result 
+            
+def convertReporttoGame():
+    pass
+
 def findValidCellsGlobal(grid, curPlayer):
     validCellToClick = []
     for gridX, row in enumerate(grid):
@@ -74,22 +119,22 @@ def swappableTilesGlobal(x, y, grid, player):
         return swappableTiles
 
 def findAvailMovesGlobal(grid, currentPlayer):
-        validCells = findValidCellsGlobal(grid, currentPlayer)
-        playableCells = []
-        unstableCell = []
+    validCells = findValidCellsGlobal(grid, currentPlayer)
+    playableCells = []
+    unstableCell = []
 
-        for cell in validCells:
-            x, y = cell
-            if cell in playableCells:
-                continue
-            swapTiles = swappableTilesGlobal(x, y, grid, currentPlayer)
-            if len(swapTiles) > 0:
-                playableCells.append(cell)
-                for element in swapTiles:
-                    if element not in unstableCell:
-                        unstableCell.extend(swapTiles)
+    for cell in validCells:
+        x, y = cell
+        if cell in playableCells:
+            continue
+        swapTiles = swappableTilesGlobal(x, y, grid, currentPlayer)
+        if len(swapTiles) > 0:
+            playableCells.append(cell)
+            for element in swapTiles:
+                if element not in unstableCell:
+                    unstableCell.append(swapTiles)
 
-        return playableCells, unstableCell
+    return playableCells, unstableCell
 
 
 def loadImages(path, size):
@@ -110,7 +155,7 @@ def coinParty(grid):
     black_piece = sum([1 if num == -1 else 0 for row in grid for num in row])
     white_piece = sum([1 if num == 1 else 0 for row in grid for num in row]) 
     
-    return 100 * (white_piece - black_piece) / (white_piece + black_piece)
+    return (white_piece - black_piece) 
 
 def mobility(grid):
     # actual/potential mobility: For simplicity I would use the most simple form
@@ -132,9 +177,11 @@ def stability(grid):
     blackMoves, unstableWhiteTiles = findAvailMovesGlobal(grid, -1)
 
     # semi-stable
-    
+
     # stable
-    pass
+    whiteStable = stableDisc(grid, 1)
+    blackStable = stableDisc(grid, -1)
+    return len(whiteStable) - len(unstableWhiteTiles) - (len(blackStable) - len(unstableBlackTiles))
 
 # we definitely need to experiment some pairs of weights
 def corner_closeness(grid):

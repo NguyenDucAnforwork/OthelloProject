@@ -95,7 +95,7 @@ class Grid:
         return textImg
 
     def endScreen(self):
-        if self.GAME.gameOver:
+        if self.GAME.gameOverForComputer and self.GAME.gameOverForPlayer:
             endScreenImg = pygame.Surface((320, 320))
             endText = self.font.render(f'{"Congratulations, You Won!!" if self.player1Score > self.player2Score else "Bad Luck, You Lost"}', 1, 'White')
             endScreenImg.blit(endText, (0, 0))
@@ -122,7 +122,7 @@ class Grid:
             for move in availMoves:
                 pygame.draw.rect(window, 'White', (80 + (move[1] * 80) + 30, 80 + (move[0] * 80) + 30, 20, 20))
 
-        if self.GAME.gameOver:
+        if self.GAME.gameOverForComputer and self.GAME.gameOverForPlayer:
             window.blit(self.endScreen(), (240, 240))
 
         pygame.display.update()

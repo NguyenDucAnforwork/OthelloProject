@@ -8,12 +8,18 @@ class ComputerPlayer:
     # what is a grid object? Basically we need to change to evaluateBoard here
     # convention: player = 1 means max player; player = -1 means min player
     # this function returns both the best move and best value
-    def computerHard(self, grid, depth, alpha, beta, player):
+    def computerHard(self, grid, depth, alpha, beta, player, numMove):
         newGrid = copy.deepcopy(grid)
         availMoves = self.grid.findAvailMoves(newGrid, player)
 
         if depth == 0 or len(availMoves) == 0:
-            bestMove, Score = None, mobility(grid)   # heuristic function
+            if(numMove >= 8 and numMove <= 32):
+                coef = [2,10]
+            elif numMove >32 and numMove <= 56:
+                coef = [2,6]
+            else:
+                coef = [2,2]
+            bestMove, Score = None, coef[0] * stability(grid)    # heuristic function
             return bestMove, Score
 
         if player < 0:   # minimizing player
@@ -28,7 +34,7 @@ class ComputerPlayer:
                     newGrid[tile[0]][tile[1]] = player
 
                 # we need to update the grid before calling recursive function
-                bMove, value = self.computerHard(newGrid, depth-1, alpha, beta, player *-1)
+                bMove, value = self.computerHard(newGrid, depth-1, alpha, beta, player *-1, numMove+1)
 
                 if value < bestScore:
                     bestScore = value
@@ -51,7 +57,7 @@ class ComputerPlayer:
                 for tile in swappableTiles:
                     newGrid[tile[0]][tile[1]] = player
 
-                bMove, value = self.computerHard(newGrid, depth-1, alpha, beta, player*-1)   # it's the best move of the opponent
+                bMove, value = self.computerHard(newGrid, depth-1, alpha, beta, player*-1,numMove+1)   # it's the best move of the opponent
 
                 if value > bestScore:
                     bestScore = value

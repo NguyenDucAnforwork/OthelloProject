@@ -163,12 +163,26 @@ def mobility(grid):
     whiteAvailableMoves = len(whiteMoves)
     blackMoves, swappableWhiteTiles = findAvailMovesGlobal(grid, -1)
     blackAvailableMoves = len(blackMoves)
-    if whiteAvailableMoves + blackAvailableMoves > 0:
-        return 1000 * (whiteAvailableMoves - blackAvailableMoves) / (whiteAvailableMoves + blackAvailableMoves)
-    # potential mobility
-
-    else:
-        return 0
+    
+    # potential mobility: I would calculate the number of frontier/outside discs
+    frontier = {}
+    frontier[1] = 0
+    frontier[-1] = 0
+    for gridX, row in enumerate(grid):
+        for gridY, col in enumerate(row):
+            if grid[gridX][gridY] != 0:
+                player = grid[gridX][gridY]
+                DIRECTIONS = directions(gridX, gridY)
+                for direction in DIRECTIONS:
+                    if grid[direction[0]][direction[1]] == 0:
+                       frontier[player] += 1
+                       break 
+    
+    # we adjust the parameters here
+    whiteMobility = 7 * whiteAvailableMoves + 3 * frontier[-1]
+    blackMobility = 7 * blackAvailableMoves + 3 * frontier[1]
+    
+    return whiteMobility - blackMobility
 
 # stable, semi-stable, unstable. Do we really need the statistic from both sides? 
 def stability(grid):
@@ -205,7 +219,7 @@ def corner_occupancy(grid):
 
 # need to build dynamic weight
 def static_weight(grid):
-    print(grid)
+
     weight = [
         [120,-20,20,5,5,20,-20,120],
         [-20,-40,-5,-5,-5,-5,-40,-20],
@@ -218,3 +232,4 @@ def static_weight(grid):
     ]
     res = print(sum([int(grid[i][j])*int(weight[i][j]) for i in range(0,8) for j in range(0,8)]))
     return res
+

@@ -89,12 +89,16 @@ class Othello:
                     self.gameOverForComputer = True
                     self.currentPlayer *= -1
                     return
+                # for move in self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
+                #     print(move, end=" ")
+                # print()
                 self.gameOverForComputer = False
                 numMove = sum([abs(num) for row in self.grid.gridLogic for num in row])
                 start_time = time.time()
-                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 6, -64, 64, -1, numMove)
+                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 4, -64, 64, -1, numMove)
+                # print(cell)
                 end_time = time.time()
-                print("Thời gian thực hiện nước {numMove} là ", end_time-start_time)
+                # print(f"Thời gian thực hiện nước {numMove} là ", end_time-start_time)
                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                 swappableTiles = self.grid.swappableTiles(cell[0], cell[1], self.grid.gridLogic, self.currentPlayer)
                 for tile in swappableTiles:

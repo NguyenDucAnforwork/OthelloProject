@@ -3,7 +3,6 @@ from utility_functions import *
 class ComputerPlayer:
     def __init__(self, gridObject):
         self.grid = gridObject
-
     # where we implement our Minimax algorithm | findAvailMoves, evaluateBoard, swappableTiles, computerHard (recursively)
     # what is a grid object? Basically we need to change to evaluateBoard here
     # convention: player = 1 means max player; player = -1 means min player
@@ -12,18 +11,21 @@ class ComputerPlayer:
         newGrid = copy.deepcopy(grid)
         availMoves = self.grid.findAvailMoves(newGrid, player)
 
-        if depth == 0 or len(availMoves) == 0:
+        # if there's no feasible move and we're still not in the leaf node yet
+        if numMove == 64 or depth == 0 or len(availMoves) == 0:
             if(numMove >= 8 and numMove <= 32):
                 coef = [2,10]
             elif numMove >32 and numMove <= 56:
-                coef = [2,6]
+                coef = [3,9]
             else:
-                coef = [2,2]
-            bestMove, Score = None, coef[0] * stability(grid)    # heuristic function
-            return bestMove, Score
+                coef = [8,4]
+            bMove, Score = None, coef[0] * coinParty(grid) + coef[1] * mobility(grid)    # heuristic function
+            # print(f"NumMove: {numMove}, player: {player}, Best Move: {Score}, Best Score: {bMove}, depth: {depth}")
+
+            return bMove, Score
 
         if player < 0:   # minimizing player
-            bestScore = 64
+            bestScore = 100000
             bestMove = None
 
             for move in availMoves:
@@ -33,7 +35,7 @@ class ComputerPlayer:
                 for tile in swappableTiles:
                     newGrid[tile[0]][tile[1]] = player
 
-                # we need to update the grid before calling recursive function
+                # we need to update the grid before calling recursive function because we evaluate positions in the future
                 bMove, value = self.computerHard(newGrid, depth-1, alpha, beta, player *-1, numMove+1)
 
                 if value < bestScore:
@@ -44,10 +46,11 @@ class ComputerPlayer:
                     break
 
                 newGrid = copy.deepcopy(grid)    # reset and make a new grid
+                # print(f"NumMove: {numMove}, player: {player}, Best Move: {bestMove}, Best Score: {bestScore}, depth: {depth}")
             return bestMove, bestScore
 
         if player > 0:    # maximizer
-            bestScore = -64 
+            bestScore = -100000 
             bestMove = None
 
             for move in availMoves:
@@ -67,4 +70,5 @@ class ComputerPlayer:
                     break
 
                 newGrid = copy.deepcopy(grid)
+                # print(f"NumMove: {numMove}, player: {player}, Best Move: {bestMove}, Best Score: {bestScore}, depth: {depth}")
             return bestMove, bestScore

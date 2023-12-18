@@ -9,3 +9,12 @@
 
 - Heuristic 2: Local Maximization (basically add weight for each cell)
 ![Example Image](result/heuristic2_firstTry.jpg)
+
+- Heuristic 3: coinParty + mobility: khá lạ khi có 1 lần bị pass liên tiếp 2 lượt (???) và đi một số nước khá loudy
+
+![Ex2](result/mobility_coinparty_ex.jpg)
+![Ex3](result/mobility_coinparty_ex2.jpg)
+![have_to_pass](result/have_to_pass.jpg)
+
+Kết quả cuối cùng như cc :) 
+![final_res_mobility](final_res_mobility.png)

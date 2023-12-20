@@ -59,6 +59,7 @@ class Othello:
                         x, y = pygame.mouse.get_pos()
                         x, y = (x - 80) // 80, (y - 80) // 80
                         validCells = self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer)
+                        numMove = sum([abs(num) for row in self.grid.gridLogic for num in row])
                         if validCells:
                             self.gameOverForPlayer = False                            
                             if (y, x) in validCells:
@@ -67,6 +68,8 @@ class Othello:
                                 for tile in swappableTiles:
                                     self.grid.animateTransitions(tile, self.currentPlayer)
                                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
+                                whiteMobility, blackMobility, fron1, fron2 = mobility(self.grid.gridLogic, self.currentPlayer)
+                                print(f"Move: {numMove} | player {self.currentPlayer}, white: Cur - {whiteMobility}, poten - {fron2} || black: Cur - {blackMobility}, poten - {fron1}")                            
                                 self.currentPlayer *= -1
                                 # StableDisc = stableDisc(self.grid.gridLogic, 1)
                                 # for disc in StableDisc:
@@ -95,7 +98,8 @@ class Othello:
                 self.gameOverForComputer = False
                 numMove = sum([abs(num) for row in self.grid.gridLogic for num in row])
                 start_time = time.time()
-                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 4, -64, 64, -1, numMove)
+                cell, score = self.computerPlayer.computerHard(self.grid.gridLogic, 5, -64, 64, -1, numMove)
+                                
                 # print(cell)
                 end_time = time.time()
                 # print(f"Thời gian thực hiện nước {numMove} là ", end_time-start_time)
@@ -104,7 +108,9 @@ class Othello:
                 for tile in swappableTiles:
                     self.grid.animateTransitions(tile, self.currentPlayer)
                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
-                
+
+                whiteMobility, blackMobility, fron1, fron2 = mobility(self.grid.gridLogic, self.currentPlayer)
+                print(f"Move: {numMove} | player {self.currentPlayer}, white: Cur - {whiteMobility}, poten - {fron2} || black: Cur - {blackMobility}, poten - {fron1}")                            
                 self.currentPlayer *= -1   # switch to the opposite side anyways
                 StableDisc = stableDisc(self.grid.gridLogic, -1)
                 

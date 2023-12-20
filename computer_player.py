@@ -1,5 +1,5 @@
 from utility_functions import *
-
+from heuristics import *
 class ComputerPlayer:
     def __init__(self, gridObject):
         self.grid = gridObject
@@ -19,13 +19,21 @@ class ComputerPlayer:
                 coef = [3,9]
             else:
                 coef = [8,4]
-            bMove, Score = None, coef[0] * coinParty(grid) + coef[1] * mobility(grid)    # heuristic function
-            # print(f"NumMove: {numMove}, player: {player}, Best Move: {Score}, Best Score: {bMove}, depth: {depth}")
+            bMove = None    
+            whiteMobility, blackMobility, fron1, fron2 = mobility(grid, player)
+            
+            coef = [0.35, 0.5]    # I hope this works
+            if numMove < 14:
+                score = whiteMobility - blackMobility
+            elif numMove >= 14 and numMove <= 40:
+                score = (whiteMobility - blackMobility) + coef[0] * static_weight_beginning(grid)
+            else:
+                score = (whiteMobility - blackMobility) + coef[1] * static_weight_ending(grid)
 
-            return bMove, Score
+            return bMove, score
 
         if player < 0:   # minimizing player
-            bestScore = 100000
+            bestScore = 1000000
             bestMove = None
 
             for move in availMoves:
@@ -50,7 +58,7 @@ class ComputerPlayer:
             return bestMove, bestScore
 
         if player > 0:    # maximizer
-            bestScore = -100000 
+            bestScore = -1000000 
             bestMove = None
 
             for move in availMoves:

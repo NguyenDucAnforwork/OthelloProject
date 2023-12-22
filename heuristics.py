@@ -9,8 +9,11 @@ def coinParty(grid):
 # it's actually not the current player but the previous guy
 def mobility(grid, currentPlayer):
     # actual/potential mobility: For simplicity I would use the most simple form
-    whiteMoves, swappableBlackTiles = findAvailMovesGlobal(grid, 1)
-    blackMoves, swappableWhiteTiles = findAvailMovesGlobal(grid, -1)
+    moves = {}
+    moves[1] = []
+    moves[-1] = []
+    moves[1], swappableBlackTiles = findAvailMovesGlobal(grid, 1)
+    moves[-1], swappableWhiteTiles = findAvailMovesGlobal(grid, -1)
 
     # coeffcient:
     corner = 3
@@ -33,7 +36,7 @@ def mobility(grid, currentPlayer):
                 if gridY != 7: validdirections.append((gridX, gridY+1))
                 
                 for direction in validdirections:
-                    if grid[direction[0]][direction[1]]  == 0 and (direction[0], direction[1]) not in frontier[player]:
+                    if grid[direction[0]][direction[1]]  == 0 and (direction[0], direction[1]) not in frontier[player] and (direction[0], direction[1] not in moves[player * -1]):
                        frontier[player].append((direction[0], direction[1]))
                        break 
     
@@ -44,29 +47,30 @@ def mobility(grid, currentPlayer):
     edge_square = [(0,2), (0,3), (0,4), (0,5), (7,4), (7,5), (7,2), (7,3), (2,0), (3,0), (4,0), (5,0), (2,7), (3,7), (4,7), (5,7)]
    
     # calculate the total mobility
-    whiteMobility = 6*len(whiteMoves) + 4*len(frontier[-1])
-    blackMobility = 6*len(blackMoves) + 4*len(frontier[1])
+    whiteMobility = 10*len(moves[1]) + len(frontier[-1])
+    blackMobility = 10*len(moves[-1]) + len(frontier[1])
     
     # take into account the quality of the move
-    if currentPlayer == 1:
-        for move in blackMoves:
-            if move in corner_square:
-                blackMobility += 6 * corner
-            if move in X_square:
-                blackMobility += 6 * X
-            if move in C_square:
-                blackMobility += 6*C
-            if move in edge_square:
-                blackMobility += 6*edge
-        for move in frontier[1]:
-            if move in corner_square:
-                blackMobility += 4 * corner
-            if move in X_square:
-                blackMobility += 4 * X   # not sure about this
-            if move in C_square:
-                blackMobility += 4 * C
-            if move in edge_square:
-                blackMobility += 4 * edge
+    # if currentPlayer == 1:
+    #     for move in blackMoves:
+    #         if move in corner_square:
+    #             blackMobility += 6 * corner
+    #         if move in X_square:
+    #             blackMobility += 6 * X
+    #         if move in C_square:
+    #             blackMobility += 6*C
+    #         if move in edge_square:
+    #             blackMobility += 6*edge
+    #     for move in frontier[1]:
+    #         if move in corner_square:
+    #             blackMobility += 4 * corner
+    #         if move in X_square:
+    #             blackMobility += 4 * X   # not sure about this
+    #         if move in C_square:
+    #             blackMobility += 4 * C
+    #         if move in edge_square:
+    #             blackMobility += 4 * edge
+
         # for move in whiteMoves:
         #     if move in corner_square:
         #         whiteMobility += 6 * corner
@@ -102,18 +106,27 @@ def stability(grid):
     return len(whiteStable) - len(unstableWhiteTiles) - (len(blackStable) - len(unstableBlackTiles))
 
 # we definitely need to experiment some pairs of weights
-def corner_closeness(grid):
-    coordinates = {
-        [0,1], [1,0],
-        [0,6], [1,7],
-        [6,0], [7,1],
-        [6,7], [7,6]
-    }
+def xSquare(grid):
+    coordinates = (
+        [1,1], [6,6],
+        [6,1], [1,6],
+    )
 
     white_pieces = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
     black_pieces = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
 
-    return -12.5 * white_pieces + 12.5 * black_pieces
+    return -1000 * white_pieces + 1000 * black_pieces
+
+def corner(grid):
+    coordinates = (
+        [0,0], [0,7],
+        [7,0], [7,7],
+    )
+
+    white_pieces = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
+    black_pieces = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
+
+    return 100000 * white_pieces - 100000 * black_pieces
 
 def corner_occupancy(grid):
     corner = [[0,0], [0,7], [7,0], [7,7]]

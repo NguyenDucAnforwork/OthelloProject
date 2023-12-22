@@ -35,7 +35,7 @@ class Grid:
     def newGame(self):
         self.tokens.clear()
         self.gridLogic = self.regenGrid(self.y, self.x)
-
+        
     # loadSpriteSheet
     def loadBackGroundImages(self):
         alpha = 'ABCDEFGHI'
@@ -168,6 +168,8 @@ class Grid:
             return []
 
         swappableTiles = []
+        directionFlipped = 0
+
         for checkCell in surroundCells:
             checkX, checkY = checkCell
             difX, difY = checkX - x, checkY - y
@@ -191,9 +193,10 @@ class Grid:
                     RUN = False
 
             if len(currentLine) > 0:
+                directionFlipped += 1
                 swappableTiles.extend(currentLine)
 
-        return swappableTiles
+        return swappableTiles, directionFlipped
     
     # findValidCells. Takes the list of validCells and returns a list of playable cells"""
     def findAvailMoves(self, grid, currentPlayer):
@@ -204,7 +207,7 @@ class Grid:
             x, y = cell
             if cell in playableCells:
                 continue
-            swapTiles = self.swappableTiles(x, y, grid, currentPlayer)
+            swapTiles, flipped = self.swappableTiles(x, y, grid, currentPlayer)
 
             if len(swapTiles) > 0:
                 playableCells.append(cell)

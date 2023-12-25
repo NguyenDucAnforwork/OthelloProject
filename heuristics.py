@@ -47,8 +47,8 @@ def mobility(grid, currentPlayer):
     edge_square = [(0,2), (0,3), (0,4), (0,5), (7,4), (7,5), (7,2), (7,3), (2,0), (3,0), (4,0), (5,0), (2,7), (3,7), (4,7), (5,7)]
    
     # calculate the total mobility
-    whiteMobility = 10*len(moves[1]) + len(frontier[-1])
-    blackMobility = 10*len(moves[-1]) + len(frontier[1])
+    whiteMobility = 20/21*len(moves[1]) + 1/21*len(frontier[-1])
+    blackMobility = 20/21*len(moves[-1]) + 1/21*len(frontier[1])
     
     # take into account the quality of the move
     # if currentPlayer == 1:
@@ -115,7 +115,7 @@ def xSquare(grid):
     white_pieces = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
     black_pieces = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
 
-    return -1000 * white_pieces + 1000 * black_pieces
+    return -5 * white_pieces + 5 * black_pieces
 
 def corner(grid):
     coordinates = (
@@ -126,7 +126,7 @@ def corner(grid):
     white_pieces = sum([1 if grid[coor[0]][coor[1]] == 1 else 0 for coor in coordinates])
     black_pieces = sum([1 if grid[coor[0]][coor[1]] == -1 else 0 for coor in coordinates])
 
-    return 100000 * white_pieces - 100000 * black_pieces
+    return 10 * white_pieces - 10 * black_pieces
 
 def corner_occupancy(grid):
     corner = [[0,0], [0,7], [7,0], [7,7]]
@@ -148,7 +148,7 @@ def static_weight_beginning(grid):
         [120,-20,20,5,5,20,-20,120],
     ]
     res = (sum([int(grid[i][j])*int(weight[i][j]) for i in range(0,8) for j in range(0,8)]))
-    return res
+    return res/30
 
 def static_weight_ending(grid):
     weight = [
@@ -162,4 +162,4 @@ def static_weight_ending(grid):
         [120,-20,20,5,5,20,-20,120],
     ]
     res = sum([int(grid[i][j])*int(weight[i][j]) for i in range(0,8) for j in range(0,8)])
-    return res
+    return res/20

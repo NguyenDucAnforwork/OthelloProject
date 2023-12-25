@@ -20,7 +20,7 @@ class ComputerPlayer:
                 coef = [8,4]
             bMove = None    
             whiteMobility, blackMobility, fron1, fron2 = mobility(grid, player)
-            score = whiteMobility - blackMobility + xSquare(grid) if numMove < 52 else whiteMobility - blackMobility + xSquare(grid) + corner(grid)
+            score = coinParty(grid)
             # coef = [0.35, 0.5]    # I hope this works
             # if numMove < 14:
             #     score = whiteMobility - blackMobility

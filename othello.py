@@ -13,7 +13,7 @@ class Othello:
         self.screen = pygame.display.set_mode((1100, 800))
         pygame.display.set_caption('Othello')
         
-        self.method = "Formula = corner + 100*xSquare + mobility + 10*flippedDirection | Depth = 4 | include corner from move 52"
+        self.method = "Formula = mobi + static weight/10 | Depth = 4 | mobi coef: 10 - 1 | after move 30pp"
         self.gamePlayed = False
         self.game_file_path = "./result/games.txt"
         self.player1 = 1
@@ -64,7 +64,7 @@ class Othello:
                             plt.title(f'{self.method}')
 
                             # Lưu biểu đồ vào file ảnh trong thư mục "result"
-                            result_path = os.path.join('result', 'try1.png')
+                            result_path = os.path.join('result', 'try11.png')
                             plt.savefig(result_path)
 
                             # Hiển thị biểu đồ
@@ -100,7 +100,10 @@ class Othello:
                                     self.grid.animateTransitions(tile, self.currentPlayer)
                                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
                                 whiteMobility, blackMobility, fron1, fron2 = mobility(self.grid.gridLogic, self.currentPlayer)
-                                self.result.append(whiteMobility-blackMobility)
+                                
+                                score = (whiteMobility - blackMobility) + static_weight_beginning(self.grid.gridLogic) if numMove >= 30 else whiteMobility - blackMobility
+
+                                self.result.append(score)
                                 print(f"Move: {numMove} | player {self.currentPlayer}, white: Cur - {whiteMobility}, poten - {fron2} || black: Cur - {blackMobility}, poten - {fron1}")                            
                                 self.currentPlayer *= -1
                                 self.time = pygame.time.get_ticks()

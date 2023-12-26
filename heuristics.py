@@ -47,8 +47,8 @@ def mobility(grid, currentPlayer):
     edge_square = [(0,2), (0,3), (0,4), (0,5), (7,4), (7,5), (7,2), (7,3), (2,0), (3,0), (4,0), (5,0), (2,7), (3,7), (4,7), (5,7)]
    
     # calculate the total mobility
-    whiteMobility = 20/21*len(moves[1]) + 1/21*len(frontier[-1])
-    blackMobility = 20/21*len(moves[-1]) + 1/21*len(frontier[1])
+    whiteMobility = 2/5*len(moves[1]) + 3/5*len(frontier[-1])
+    blackMobility = 2/5*len(moves[-1]) + 3/5*len(frontier[1])
     
     # take into account the quality of the move
     # if currentPlayer == 1:
@@ -103,6 +103,7 @@ def stability(grid):
     # stable
     whiteStable = stableDisc(grid, 1)
     blackStable = stableDisc(grid, -1)
+    whitestabil - black
     return len(whiteStable) - len(unstableWhiteTiles) - (len(blackStable) - len(unstableBlackTiles))
 
 # we definitely need to experiment some pairs of weights
@@ -138,14 +139,14 @@ def corner_occupancy(grid):
 def static_weight_beginning(grid):
 
     weight = [
-        [120,-20,20,5,5,20,-20,120],
-        [-20,-40,-5,-5,-5,-5,-40,-20],
-        [20,-5,15,3,3,15,-5,20],
+        [120,-20,40,5,5,40,-20,120],
+        [-20,-80,-5,-5,-5,-5,-80,-20],
+        [40,-5,25,3,3,25,-5,40],
         [5,-5,3,3,3,3,-5,5],
         [5,-5,3,3,3,3,-5,5],
-        [20,-5,15,3,3,15,-5,20],
-        [-20,-40,-5,-5,-5,-5,-40,-20],
-        [120,-20,20,5,5,20,-20,120],
+        [40,-5,25,3,3,25,-5,40],
+        [-20,-80,-5,-5,-5,-5,-80,-20],
+        [120,-20,40,5,5,40,-20,120],
     ]
     res = (sum([int(grid[i][j])*int(weight[i][j]) for i in range(0,8) for j in range(0,8)]))
     return res/30

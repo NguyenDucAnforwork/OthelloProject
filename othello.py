@@ -159,7 +159,7 @@ class Othello:
                 # self.gamePlayed = False if numMove == 63 else True
 
                 start_time = time.time()
-                cell, score = self.computerPlayer.computerHard1(self.grid.gridLogic, 4, -64, 64, 1, numMove)
+                cell, score = self.computerPlayer.computerHard1(self.grid.gridLogic, 5, -64, 64, 1, numMove)
                 # print(str(numMove) + " | " + str(cell))
                 with open(self.game_file_path, "a") as file:
                     a = cell[0]+1

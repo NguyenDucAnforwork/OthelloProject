@@ -3,6 +3,7 @@ import random
 import copy
 from utility_functions import * 
 from Token import *
+import random
 
 class Grid:
 
@@ -68,16 +69,36 @@ class Grid:
     # insertToken
     # generate an empty grid for logic use
     def regenGrid(self, rows, columns):
+        opening_library = [
+            [[(0,5), (1,4), (2,3), (2,2), (3,2), (3,3), (3,4), (4,2), (4,3), (4,4)], [(2,4), (3,5), (4,5), (5,5)]],
+            [[(2,2), (2,3), (2,4), (3,1), (3,2), (3,3), (3,4), (3,5), (3,6)], [(4,3), (4,4), (5,2), (5,3), (5,4)]],
+            [[(1,2), (2,2), (2,3), (3,1), (3,2), (3,3), (3,4), (4,3), (5,3)], [(1,3), (2,4), (3,5), (4,4), (4,5)]],
+            [[(1,3), (2,2), (2,3), (3,2), (3,3), (4,2), (4,3), (5,4)], [(2,5), (3,4), (3,5), (4,4), (4,5), (5,3)]],
+            [[(2,1), (2,2), (2,3), (3,4), (4,2), (4,3), (4,4), (4,5)], [(1,3), (2,4), (3,1), (3,2), (3,3), (3,5)]],
+            [[(1,4), (2,3), (2,4), (2,5), (3,4), (4,2), (4,3), (4,4)], [(1,3), (2,2), (3,1), (3,2), (3,3), (3,5)]],
+            [[(1,3), (2,2), (2,3), (3,2), (3,3), (4,2), (5,3), (6,4)], [(2,5), (3,4), (3,5), (4,3), (4,4), (4,5)]],
+            [[(2,1), (2,2), (2,3), (3,4), (4,2), (4,3), (4,4), (4,5)], [(1,3), (2,4), (3,1), (3,2), (3,3), (3,5)]],
+            [[(1,3), (2,2), (2,3), (3,2), (3,3), (3,5), (4,2), (5,1)], [(3,4), (4,1), (4,3), (4,4), (4,5), (5,3)]],
+            [[(2,2), (3,2), (3,3), (3,5), (4,2), (4,3), (5,3), (5,4), (6,3)], [(2,3), (3,4), (4,4), (4,5), (5,2)]]
+        ]
+
         grid = []
         for y in range(rows):
             line = []
             for x in range(columns):
                 line.append(0)
             grid.append(line)
-        self.insertToken(grid, 1, 3, 3)
-        self.insertToken(grid, -1, 3, 4)
-        self.insertToken(grid, 1, 4, 4)
-        self.insertToken(grid, -1, 4, 3)
+
+        for whiteToken in opening_library[5][0]:
+            self.insertToken(grid, 1, whiteToken[0], whiteToken[1])
+        
+        for blackToken in opening_library[5][1]:
+            self.insertToken(grid, -1, blackToken[0], blackToken[1])
+        # self.insertToken(grid, 1, 3, 3)
+        # self.insertToken(grid, -1, 3, 4)
+        # self.insertToken(grid, 1, 4, 4)
+        # self.insertToken(grid, -1, 4, 3)
+
         return grid
 
     # this is the heuristic function!!! I've tried the simplest one

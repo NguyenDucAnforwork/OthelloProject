@@ -94,6 +94,8 @@ def mobility(grid, currentPlayer):
 
 # stable, semi-stable, unstable. Do we really need the statistic from both sides? 
 def stability(grid):
+    # 
+
     # unstable
     whiteMoves, unstableBlackTiles = findAvailMovesGlobal(grid, 1)
     blackMoves, unstableWhiteTiles = findAvailMovesGlobal(grid, -1)
@@ -103,8 +105,7 @@ def stability(grid):
     # stable
     whiteStable = stableDisc(grid, 1)
     blackStable = stableDisc(grid, -1)
-    whitestabil - black
-    return len(whiteStable) - len(unstableWhiteTiles) - (len(blackStable) - len(unstableBlackTiles))
+    return len(whiteStable) - len(blackStable) 
 
 # we definitely need to experiment some pairs of weights
 def xSquare(grid):

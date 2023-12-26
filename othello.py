@@ -141,7 +141,7 @@ class Othello:
                             self.grid.newGame()
                             with open(self.game_file_path, "a") as file:
                                 file.write(f"{self.method}\n")
-                            self.currentPlayer = 1
+                            self.currentPlayer = -1
                             self.result = []
                             self.gameOverForPlayer = False
                             self.gameOverForComputer = False

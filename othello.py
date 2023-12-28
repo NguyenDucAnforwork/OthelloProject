@@ -6,6 +6,7 @@ from computer_player import *
 import time
 import matplotlib.pyplot as plt
 import os
+import threading
 class Othello:
     # first time in my life I see they pass self as an argument :)) 
     def __init__(self):
@@ -13,8 +14,9 @@ class Othello:
         self.screen = pygame.display.set_mode((1100, 800))
         pygame.display.set_caption('Othello')
         
-        self.method = "coin vs static weight | depth = 5"
+        self.method = "stabi vs stabi | depth = 5 | Opening 10 | "
         self.game_file_path = "./result/games.txt"
+        self.image = 'stabi vs stabi depth = 5 Opening 10 .png'
         self.player1 = 1
         self.player2 = -1
 
@@ -34,12 +36,15 @@ class Othello:
 
         self.RUN = True
 
+    def computeMove(self):
+        return self.computerPlayer.iterativeDeepning(self.grid.gridLogic, -1)
+
     # input, update and draw
     def run(self):
-        while self.RUN == True:
-            self.input()
-            self.update()
-            self.draw()
+            while self.RUN == True:
+                self.input()
+                self.update()
+                self.draw()
 
     # update the grid for the human side
     # gameOver | newGame | printGameLogicBoard | findAvailMoves => insertToken => swappableTiles => animateTransition
@@ -98,18 +103,19 @@ class Othello:
     #                             for tile in swappableTiles:
     #                                 self.grid.animateTransitions(tile, self.currentPlayer)
     #                                 self.grid.gridLogic[tile[0]][tile[1]] *= -1
-    #                             whiteMobility, blackMobility, fron1, fron2 = mobility(self.grid.gridLogic, self.currentPlayer)
+    #                             # whiteMobility, blackMobility, fron1, fron2 = mobility(self.grid.gridLogic, self.currentPlayer)
                                 
-    #                             score = (whiteMobility - blackMobility) + static_weight_beginning(self.grid.gridLogic) if numMove >= 30 else whiteMobility - blackMobility
+    #                             # score = (whiteMobility - blackMobility) + static_weight_beginning(self.grid.gridLogic) if numMove >= 30 else whiteMobility - blackMobility
 
-    #                             self.result.append(score)
-    #                             print(f"Move: {numMove} | player {self.currentPlayer}, white: Cur - {whiteMobility}, poten - {fron2} || black: Cur - {blackMobility}, poten - {fron1}")                            
+    #                             # self.result.append(score)
+    #                             # print(f"Move: {numMove} | player {self.currentPlayer}, white: Cur - {whiteMobility}, poten - {fron2} || black: Cur - {blackMobility}, poten - {fron1}")                            
     #                             self.currentPlayer *= -1
     #                             self.time = pygame.time.get_ticks()
     #                     else:
     #                         gameOverForPlayer = True   # if we has no valid move
     #                         self.currentPlayer *= -1
     #                         break
+    
     def input(self):
         for event in pygame.event.get():   # we can only do it ONE TIME
             if event.type == pygame.QUIT:
@@ -130,7 +136,7 @@ class Othello:
                             plt.title(f'{self.method}')
 
                             # Lưu biểu đồ vào file ảnh trong thư mục "result"
-                            result_path = os.path.join('result', 'try.png')
+                            result_path = os.path.join('result', self.image)
                             plt.savefig(result_path)
 
                             # Hiển thị biểu đồ
@@ -159,8 +165,8 @@ class Othello:
                 # self.gamePlayed = False if numMove == 63 else True
 
                 start_time = time.time()
-                cell, score = self.computerPlayer.computerHard1(self.grid.gridLogic, 5, -64, 64, 1, numMove)
-                # print(str(numMove) + " | " + str(cell))
+                cell, value = self.computerPlayer.alphaBetaPruning1(self.grid.gridLogic, 0, -64, 64, 1, 5)
+                print(str(numMove) + " | " + str(cell))
                 with open(self.game_file_path, "a") as file:
                     a = cell[0]+1
                     b = chr(ord('a')+cell[1])
@@ -176,7 +182,7 @@ class Othello:
                     self.grid.animateTransitions(tile, self.currentPlayer)
                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
             
-                self.result.append(coinParty(self.grid.gridLogic))
+                self.result.append(stability(self.grid.gridLogic))
                 self.currentPlayer *= -1   # switch to the opposite side anyways
                 
         self.grid.player1Score = self.grid.updateScore(self.player1)
@@ -201,34 +207,39 @@ class Othello:
                     self.currentPlayer *= -1
                     return
                 
-                # for move in self.grid.findAvailMoves(self.grid.gridLogic, self.currentPlayer):
-                #     print(move, end=" ")
-                # print()
-
                 self.gameOverForComputer = False
                 numMove = sum([abs(num) for row in self.grid.gridLogic for num in row])
-                # self.gamePlayed = False if numMove == 63 else True
-
                 start_time = time.time()
-                cell, score = self.computerPlayer.computerHard2(self.grid.gridLogic, 4, -64, 64, -1, numMove)
-                # print(str(numMove) + " | " + str(cell))
+                
+                # set timeout 
+                # thread = threading.Thread(target=self.computeMove)
+                # thread.start()
+                # thread.join(timeout=5)  # Set a timeout of 5 seconds
+
+                # if thread.is_alive():
+                #     thread.join()
+
+                # # calculate time computation
+                # end_time = time.time()
+                # print("runtime: ", end_time-start_time)
+                cell, value = self.computerPlayer.alphaBetaPruning2(self.grid.gridLogic, 0, -64, 64, -1, 5)
+                print(str(numMove) + " | " + str(cell))
+                # print("Số node được duyệt là: ", self.computerPlayer.nodes)
+                self.computerPlayer.nodes = 0
+
+                # record the result
                 with open(self.game_file_path, "a") as file:
                     a = cell[0]+1
                     b = chr(ord('a')+cell[1])
                     file.write(f"{b}{a} ")
 
-                # print(cell)
-                end_time = time.time()
                 # print(f"Thời gian thực hiện nước {numMove} là ", end_time-start_time)
                 self.grid.insertToken(self.grid.gridLogic, self.currentPlayer, cell[0], cell[1])
                 swappableTiles, flipped = self.grid.swappableTiles(cell[0], cell[1], self.grid.gridLogic, self.currentPlayer)
-
                 for tile in swappableTiles:
                     self.grid.animateTransitions(tile, self.currentPlayer)
                     self.grid.gridLogic[tile[0]][tile[1]] *= -1
-
-                self.result.append(coinParty(self.grid.gridLogic))
-
+                self.result.append(stability(self.grid.gridLogic))
                 self.currentPlayer *= -1   # switch to the opposite side anyways
                 
         self.grid.player1Score = self.grid.updateScore(self.player1)

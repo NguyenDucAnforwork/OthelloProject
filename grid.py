@@ -89,10 +89,10 @@ class Grid:
                 line.append(0)
             grid.append(line)
 
-        for whiteToken in opening_library[5][0]:
+        for whiteToken in opening_library[9][0]:
             self.insertToken(grid, 1, whiteToken[0], whiteToken[1])
         
-        for blackToken in opening_library[5][1]:
+        for blackToken in opening_library[9][1]:
             self.insertToken(grid, -1, blackToken[0], blackToken[1])
         # self.insertToken(grid, 1, 3, 3)
         # self.insertToken(grid, -1, 3, 4)

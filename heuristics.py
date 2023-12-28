@@ -7,7 +7,7 @@ def coinParty(grid):
     return (white_piece - black_piece) 
 
 # it's actually not the current player but the previous guy
-def mobility(grid, currentPlayer):
+def mobility(grid):
     # actual/potential mobility: For simplicity I would use the most simple form
     moves = {}
     moves[1] = []
@@ -16,8 +16,8 @@ def mobility(grid, currentPlayer):
     moves[-1], swappableWhiteTiles = findAvailMovesGlobal(grid, -1)
 
     # coeffcient:
-    corner = 3
-    X = -4
+    corner = 10
+    X = -7
     C = -3
     edge = 0.5
 
@@ -47,50 +47,33 @@ def mobility(grid, currentPlayer):
     edge_square = [(0,2), (0,3), (0,4), (0,5), (7,4), (7,5), (7,2), (7,3), (2,0), (3,0), (4,0), (5,0), (2,7), (3,7), (4,7), (5,7)]
    
     # calculate the total mobility
+    # if len(moves[1]) > 1:
+    #     whiteMobility = 2/5*len(moves[1]) + 3/5*len(frontier[-1])
+    # elif len(moves[1]) == 1:
+    #     whiteMobility = 10000 + 3/5*len(frontier[-1])
+    # else:
+    #     whiteMobility = 100000 + 3/5*len(frontier[-1])
+    # if len(moves[-1]) < 2:
+    #     blackMobility = -100000000
+    # else:
+    blackMobility = 2/5*len(moves[-1]) + 3/5*len(frontier[1]) 
     whiteMobility = 2/5*len(moves[1]) + 3/5*len(frontier[-1])
-    blackMobility = 2/5*len(moves[-1]) + 3/5*len(frontier[1])
     
+
     # take into account the quality of the move
-    # if currentPlayer == 1:
-    #     for move in blackMoves:
-    #         if move in corner_square:
-    #             blackMobility += 6 * corner
-    #         if move in X_square:
-    #             blackMobility += 6 * X
-    #         if move in C_square:
-    #             blackMobility += 6*C
-    #         if move in edge_square:
-    #             blackMobility += 6*edge
-    #     for move in frontier[1]:
-    #         if move in corner_square:
-    #             blackMobility += 4 * corner
-    #         if move in X_square:
-    #             blackMobility += 4 * X   # not sure about this
-    #         if move in C_square:
-    #             blackMobility += 4 * C
-    #         if move in edge_square:
-    #             blackMobility += 4 * edge
+    for square in corner_square:
+        if grid[square[0]][square[1]] == 1:
+            whiteMobility += corner
+        if grid[square[0]][square[1]] == -1:
+            blackMobility += corner
 
-        # for move in whiteMoves:
-        #     if move in corner_square:
-        #         whiteMobility += 6 * corner
-        #     if move in X_square:
-        #         whiteMobility += 6 * X
-        #     if move in C_square:
-        #         whiteMobility += 6*C
-        #     if move in edge_square:
-        #         whiteMobility += 6*edge
-
-        # for move in frontier[-1]:
-        #     if move in corner_square:
-        #         whiteMobility += 4 * corner
-        #     if move in X_square:
-        #         whiteMobility += 4 * X
-        #     if move in C_square:
-        #         whiteMobility += 4 * C 
-        #     if move in edge_square:
-        #         whiteMobility += 4 * edge
-    return whiteMobility, blackMobility, len(frontier[1]), len(frontier[-1])
+    for square in X_square:
+        if grid[square[0]][square[1]] == 1:
+            whiteMobility += X
+        if grid[square[0]][square[1]] == -1:
+            blackMobility += X
+        
+    return whiteMobility - blackMobility
 
 # stable, semi-stable, unstable. Do we really need the statistic from both sides? 
 def stability(grid):
